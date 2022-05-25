@@ -6,7 +6,7 @@ import streamlit as st
 import warnings
 from PIL import Image
 warnings.simplefilter(action='ignore', category=FutureWarning)
-from mlxtend.frequent_patterns import apriori, fpmax, fpgrowth
+from mlxtend.frequent_patterns import apriori, fpgrowth
 from mlxtend.frequent_patterns import association_rules
 import matplotlib.pyplot as plt
 
