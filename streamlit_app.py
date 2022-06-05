@@ -6,7 +6,7 @@ import streamlit as st
 import warnings
 from PIL import Image
 warnings.simplefilter(action='ignore', category=FutureWarning)
-from mlxtend.frequent_patterns import apriori, fpgrowth
+from mlxtend.frequent_patterns import apriori, fpmax, fpgrowth
 from mlxtend.frequent_patterns import association_rules
 import matplotlib.pyplot as plt
 
@@ -21,10 +21,10 @@ st.title('Analise de Hiperparametros')
 
 uploaded_file = st.sidebar.file_uploader("Selecione sua base de dados no formato csv", type=".csv")
 min_threshold = [0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
+dataset_example = st.sidebar.checkbox('Utilizar dataset de exemplo')
 
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
 
+def analise(df):
     st.markdown("### Data preview")
     st.dataframe(df.head())
 
@@ -155,3 +155,12 @@ if uploaded_file:
                 print('O parametro plot não tem valor válido.')
             
             st.write(df_classe)
+
+if dataset_example:
+    df = pd.read_csv("Groceries_dataset.csv")
+    analise(df)
+
+if uploaded_file:
+    dataset_example = False
+    df = pd.read_csv(uploaded_file)
+    analise(df)
