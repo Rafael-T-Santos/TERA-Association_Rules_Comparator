@@ -38,7 +38,7 @@ def analise(df):
         )
 
         id_prod = st.selectbox(
-            "Coluna com ID's dos produtos",
+            "Coluna com Identificação dos produtos",
             options=df.columns,
             index = 1,
             help="Selecione a coluna que contém os códigos dos produtos. Exemplo: CD_MATERIAL, COD_PRODUTO, ID_PRODUTO.",
