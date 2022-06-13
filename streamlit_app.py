@@ -18,9 +18,7 @@ st.set_page_config(
      initial_sidebar_state="expanded")
 
 st.title('Analise de Hiperparametros')
-
 uploaded_file = st.sidebar.file_uploader("Selecione sua base de dados no formato csv", type=".csv")
-min_threshold = [0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
 dataset_example = st.sidebar.checkbox('Utilizar dataset de exemplo')
 
 
@@ -60,7 +58,11 @@ def analise(df):
             index = 0,
             help = "Para mais detalhes acesse: [association_rules](http://rasbt.github.io/mlxtend/user_guide/frequent_patterns/association_rules/)"
         )
-        st.write(f"OBS.: Os valores de threshold utilizados serão: {min_threshold}")
+        #st.write(f"OBS.: Os valores de threshold utilizados serão: {min_threshold}")
+        min_threshold = st.multiselect(
+            'Escolha os valores de threshold',
+            [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
 
         plot = st.radio(
         "Qual gráfico gostaria de visualizar?",
@@ -103,7 +105,7 @@ def analise(df):
                 rules_levels.append([])
                 itemsets = algorythm(data, min_support=min_supports[s], use_colnames=True)
                 if itemsets.empty == True:
-                    raise exception('O valor de min_threshold é muito alto, resultando em um DataFrame vazio, alterei os valores e tente novamente')
+                    raise exception('O valor de min_threshold é muito alto, resultando em um DataFrame vazio, altere os valores e tente novamente')
                 else:
                     pass
                 for c in range(len(min_threshold)):
