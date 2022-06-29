@@ -74,89 +74,90 @@ def analise(df):
             label="Submit"
             )
         if submit_button:
-            df = pd.crosstab(df[id_venda], df[id_prod])
-            df[df>1] = 1
+            with st.spinner('Executando...'):
+                df = pd.crosstab(df[id_venda], df[id_prod])
+                df[df>1] = 1
 
-            data = df
-            if mod == 'fpgrowth':
-                algorythm = fpgrowth
-            elif mod == 'apriori':
-                algorythm = apriori
-            else:
-                pass
-            min_supports = min_support.replace(' ', '')
-            min_supports = min_supports.split(',')
-            for i in range(len(min_supports)):
-                min_supports[i] = float(min_supports[i])
-            parameter = regras
-            if plot == 'Individual':
-                plot = 1
-            elif plot == 'Unificado':
-                plot = 2
-            else:
-                pass
-
-            rules_levels = []
-            coluna1 = []
-            coluna2 = []
-            coluna3 = []
-
-            for s in range(len(min_supports)):
-                rules_levels.append([])
-                itemsets = algorythm(data, min_support=min_supports[s], use_colnames=True)
-                if itemsets.empty == True:
-                    raise exception('O valor de min_threshold é muito alto, resultando em um DataFrame vazio, altere os valores e tente novamente')
+                data = df
+                if mod == 'fpgrowth':
+                    algorythm = fpgrowth
+                elif mod == 'apriori':
+                    algorythm = apriori
                 else:
                     pass
-                for c in range(len(min_threshold)):
-                    rl = association_rules(itemsets, metric = parameter, min_threshold = min_threshold[c])
-                    rules_levels[s].append(len(rl.index))
-                    
-            for s in range(len(min_supports)):
-                for i in range(len(rules_levels[0])):
-                    coluna1.append(min_supports[s])
-                    
-            for c in range(len(min_supports)):
-                for i in range(len(min_threshold)):
-                    coluna2.append(min_threshold[i])
-            
-            for r in range(len(rules_levels)):
-                for i in range(len(rules_levels[r])):
-                    coluna3.append(rules_levels[r][i])
-            
-            dicionario = {
-            'min_support': coluna1,
-            'confidence': coluna2,
-            'qt_itemsets': coluna3
-            }
-            df_classe = pd.DataFrame(dicionario)
-            
-            if plot == 1:
+                min_supports = min_support.replace(' ', '')
+                min_supports = min_supports.split(',')
+                for i in range(len(min_supports)):
+                    min_supports[i] = float(min_supports[i])
+                parameter = regras
+                if plot == 'Individual':
+                    plot = 1
+                elif plot == 'Unificado':
+                    plot = 2
+                else:
+                    pass
+
+                rules_levels = []
+                coluna1 = []
+                coluna2 = []
+                coluna3 = []
+
+                for s in range(len(min_supports)):
+                    rules_levels.append([])
+                    itemsets = algorythm(data, min_support=min_supports[s], use_colnames=True)
+                    if itemsets.empty == True:
+                        raise exception('O valor de min_threshold é muito alto, resultando em um DataFrame vazio, altere os valores e tente novamente')
+                    else:
+                        pass
+                    for c in range(len(min_threshold)):
+                        rl = association_rules(itemsets, metric = parameter, min_threshold = min_threshold[c])
+                        rules_levels[s].append(len(rl.index))
+                        
+                for s in range(len(min_supports)):
+                    for i in range(len(rules_levels[0])):
+                        coluna1.append(min_supports[s])
+                        
+                for c in range(len(min_supports)):
+                    for i in range(len(min_threshold)):
+                        coluna2.append(min_threshold[i])
+                
                 for r in range(len(rules_levels)):
-                    fig = plt.figure(figsize = (10, 5))
-                    with plt.style.context('seaborn'):
-                        plt.xlabel(f'{parameter} level')
-                        plt.ylabel('quantidade de regras')
-                        plt.plot(min_threshold, rules_levels[r], 'k--')
-                        plt.plot(min_threshold, rules_levels[r], 'go')
-                        plt.title(f'min_support = {min_supports[r]}\nEquivalente a {len(data.index)*min_supports[r]} vendas.')
-                        st.pyplot(fig)
-            elif plot == 2:
-                fig2 = plt.figure(figsize = (10, 5))
-                for r in range(len(rules_levels)):
-                    with plt.style.context('seaborn'):
-                        plt.plot(min_threshold, rules_levels[r], label = f'min_support = {min_supports[r]}')
-                plt.xlabel(f'{parameter} level')
-                plt.ylabel('quantidade de regras')
-                plt.title('Comparação de todos os suportes adicionados.')
-                plt.legend()
-                st.pyplot(fig2)       
-            elif plot == 0:
-                pass
-            else:
-                print('O parametro plot não tem valor válido.')
-            
-            st.write(df_classe)
+                    for i in range(len(rules_levels[r])):
+                        coluna3.append(rules_levels[r][i])
+                
+                dicionario = {
+                'min_support': coluna1,
+                'confidence': coluna2,
+                'qt_itemsets': coluna3
+                }
+                df_classe = pd.DataFrame(dicionario)
+                
+                if plot == 1:
+                    for r in range(len(rules_levels)):
+                        fig = plt.figure(figsize = (10, 5))
+                        with plt.style.context('seaborn'):
+                            plt.xlabel(f'{parameter} level')
+                            plt.ylabel('quantidade de regras')
+                            plt.plot(min_threshold, rules_levels[r], 'k--')
+                            plt.plot(min_threshold, rules_levels[r], 'go')
+                            plt.title(f'min_support = {min_supports[r]}\nEquivalente a {len(data.index)*min_supports[r]} vendas.')
+                            st.pyplot(fig)
+                elif plot == 2:
+                    fig2 = plt.figure(figsize = (10, 5))
+                    for r in range(len(rules_levels)):
+                        with plt.style.context('seaborn'):
+                            plt.plot(min_threshold, rules_levels[r], label = f'min_support = {min_supports[r]}')
+                    plt.xlabel(f'{parameter} level')
+                    plt.ylabel('quantidade de regras')
+                    plt.title('Comparação de todos os suportes adicionados.')
+                    plt.legend()
+                    st.pyplot(fig2)       
+                elif plot == 0:
+                    pass
+                else:
+                    print('O parametro plot não tem valor válido.')
+                
+                st.write(df_classe)
 
 if dataset_example:
     df = pd.read_csv("Groceries_dataset.csv")
